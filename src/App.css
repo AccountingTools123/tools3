@@ -1,38 +1,254 @@
+/* General styling */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  color: #333; /* Default text color */
+}
+
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  padding: 20px;
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: #333;
+  color: black; /* Header text color */
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+h1, h4 {
+  margin: 0 0 20px 0;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Fixed table layout */
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left; /* Left align text for readability */
+  color: #333; /* Set cell text color to black */
+}
+
+th {
+  background-color: #4CAF50;
+  color: black;
+  cursor: pointer;
+  white-space: normal; /* Allow header text wrapping */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+th div {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+th input {
+  margin-top: 5px;
+  width: 90%;
+}
+
+td {
+  background-color: #fff; /* White background for cells */
+  white-space: normal; /* Allow cell text wrapping */
+  word-wrap: break-word; /* Ensure long words break and wrap to the next line */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Show ellipsis for overflow text */
+}
+
+td input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically on smaller screens */
+  align-items: center; /* Center horizontally */
+  gap: 20px; /* Space between buttons */
+  margin-bottom: 20px;
+}
+.button-container > div {
+  width: 100%;
+  max-width: 300px; /* Limit width for larger screens */
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: white;
+  font-size: 16px;
+}
+
+button {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .button-container {
+    flex-direction: row; /* Align buttons horizontally on larger screens */
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto; /* Horizontal scroll on smaller screens */
+  }
+
+  th, td {
+    padding: 12px 8px;
+  }
+
+  td input[type="text"] {
+    width: 100%;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  table, th, td {
+    display: block;
+    width: 100%;
+  }
+
+  th, td {
+    text-align: left;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  td:nth-child(even) {
+    background-color: #f2f2f2; /* Alternating background color for rows */
+  }
+
+  td input[type="text"] {
+    width: 100%;
+    padding: 8px;
+  }
+}
+.App-header {
+  padding: 20px;
+}
+
+.tabs {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background-color: #007bff;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.button-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+
+.expense-form input, .expense-form select {
+  margin-right: 10px;
+  padding: 5px;
+}
+
+.expense-form button {
+  padding: 5px 10px;
+}
+
+.add-custom-type {
+  width: auto;
+  max-width: none;
+  padding: 5px 10px;
+  background-color: #007bff;
+  font-size: 14px;
+}
+
+.add-custom-type:hover {
+  background-color: #0056b3;
+}
+
+.custom-type-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.custom-type-form input {
+  flex-grow: 1;
+  padding: 5px;
 }
