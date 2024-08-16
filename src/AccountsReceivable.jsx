@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
+import { Container, Box, Typography, Button, Input, Table, TableHead, TableBody, TableRow, TableCell, TextField } from '@mui/material';
 import './App.css';
 
 function AccountsReceivable() {
@@ -20,7 +21,6 @@ function AccountsReceivable() {
 
         const [newHeaders, ...newRows] = excelData;
 
-        // Ensure "Comments" header exists
         const commentsHeaderIndex = newHeaders.indexOf('Comments');
         if (commentsHeaderIndex === -1) {
           newHeaders.push('Comments');
@@ -135,10 +135,10 @@ function AccountsReceivable() {
 
   const handleSaveData = () => {
     if (!data.length) return;
-    const workbook = XLSX.utils.book_new(); // Create a new workbook
-    const worksheet = XLSX.utils.json_to_sheet(applySortAndFilter(data, sortConfig, filterConfig)); // Create a worksheet from the data
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1'); // Append the worksheet to the workbook
-    XLSX.writeFile(workbook, 'updated_data.xlsx'); // Write the workbook to a file
+    const workbook = XLSX.utils.book_new(); 
+    const worksheet = XLSX.utils.json_to_sheet(applySortAndFilter(data, sortConfig, filterConfig)); 
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1'); 
+    XLSX.writeFile(workbook, 'updated_data.xlsx'); 
   };
 
   useEffect(() => {
@@ -148,74 +148,78 @@ function AccountsReceivable() {
   }, [comments]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Merging Tool: Accounts Receivable Aging Report</h1>
-        <div className="button-container">
-          <div>
-            <h4>Upload today's updated aging report here↓</h4>
-            <input
+    <Container className="App">
+      <Box my={4}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Merging Tool: Accounts Receivable Aging Report
+        </Typography>
+        <Box className="button-container" display="flex" justifyContent="space-between" mb={2}>
+          <Box>
+            <Typography variant="h6">Upload today's updated aging report here↓</Typography>
+            <Input
               type="file"
               accept=".xlsx, .xls"
               onChange={(e) => handleFileUpload(e)}
             />
-          </div>
-          <div>
-            <h4>Upload yesterday's aging report with comments here↓</h4>
-            <input
+          </Box>
+          <Box>
+            <Typography variant="h6">Upload yesterday's aging report with comments here↓</Typography>
+            <Input
               type="file"
               accept=".xlsx, .xls"
               onChange={(e) => handleFileUpload(e, true)}
             />
-          </div>
-        </div>
-        <button onClick={handleSaveData}>Save Data</button>
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr>
+          </Box>
+        </Box>
+        <Button variant="contained" color="primary" onClick={handleSaveData}>
+          Save Data
+        </Button>
+        <Box className="table-container" mt={4}>
+          <Table>
+            <TableHead>
+              <TableRow>
                 {headers.map((header, index) => (
-                  <th key={index} onClick={() => handleSort(header)}>
+                  <TableCell key={index} onClick={() => handleSort(header)}>
                     {header}
                     {sortConfig.find(config => config.key === header) ? (sortConfig.find(config => config.key === header).direction === 'asc' ? ' ↑' : ' ↓') : ''}
-                  </th>
+                  </TableCell>
                 ))}
-              </tr>
-              <tr>
+              </TableRow>
+              <TableRow>
                 {headers.map((header, index) => (
-                  <th key={index}>
-                    <input
-                      type="text"
+                  <TableCell key={index}>
+                    <TextField
                       placeholder={`Filter ${header}`}
                       onChange={(e) => handleFilterChange(header, e.target.value)}
+                      fullWidth
                     />
-                  </th>
+                  </TableCell>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {applySortAndFilter(data, sortConfig, filterConfig).map((row, rowIndex) => (
-                <tr key={rowIndex}>
+                <TableRow key={rowIndex}>
                   {headers.map((header, colIndex) => (
-                    <td key={colIndex}>
+                    <TableCell key={colIndex}>
                       {header === 'Comments' ? (
-                        <input
-                          type="text"
+                        <TextField
                           value={row[header]}
                           onChange={(e) => handleCommentChange(rowIndex, e.target.value)}
+                          fullWidth
                         />
                       ) : (
                         row[header]
                       )}
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </header>
-    </div>
+            </TableBody>
+          </Table>
+        </Box>
+      </Box>
+    </Container>
   );
 }
 

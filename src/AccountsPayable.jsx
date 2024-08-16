@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Input, Select, MenuItem, Button, TextField } from '@mui/material';
 
 function AccountsPayable() {
   const [expenses, setExpenses] = useState([]);
@@ -8,7 +9,7 @@ function AccountsPayable() {
   const [taxRate, setTaxRate] = useState(13); // Default tax rate percentage
   const [customTypes, setCustomTypes] = useState([]); // New state for custom expense types
   const [newCustomType, setNewCustomType] = useState(''); // New state for the input field
-  const [expenseTypes, setExpenseTypes] = useState(['Meals 7525', 'Training 7090','Travel-Office 8000','Tech Vehicle 5420', 'Building R&M 8150', 'Vehicle R&M 8310', 'Misc Service 5060', 'Shop Supplies 5410', 'Office Supplies 7600', 'Dues 7210', 'Safety 7900']); // State for all expense types
+  const [expenseTypes, setExpenseTypes] = useState(['Meals 7525', 'Training 7090', 'Travel-Office 8000', 'Tech Vehicle 5420', 'Building R&M 8150', 'Vehicle R&M 8310', 'Misc Service 5060', 'Shop Supplies 5410', 'Office Supplies 7600', 'Dues 7210', 'Safety 7900']); // State for all expense types
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -17,7 +18,7 @@ function AccountsPayable() {
 
   const handleSaveData = () => {
     if (!expenses.length) return;
-  
+
     const expensesForExport = expenses.map(expense => ({
       vendor: expense.vendor,
       description: expense.description,
@@ -29,34 +30,35 @@ function AccountsPayable() {
         [type]: expense.type === type ? expense.beforeTax.toFixed(2) : ''
       }), {})
     }));
-  
+
     const grandTotal = expensesForExport.reduce((acc, expense) => acc + parseFloat(expense.total), 0);
-  
-    const grandTotalRow = { 
-      vendor: '', 
-      description: 'Grand Total', 
-      beforeTax: '', 
-      tax: '', 
-      total: grandTotal.toFixed(2), 
+
+    const grandTotalRow = {
+      vendor: '',
+      description: 'Grand Total',
+      beforeTax: '',
+      tax: '',
+      total: grandTotal.toFixed(2),
       ...expenseTypes.reduce((acc, type) => ({
         ...acc,
         [type]: calculateTypeTotal(type)
       }), {})
     };
     expensesForExport.push(grandTotalRow);
-  
+
     const worksheet = XLSX.utils.json_to_sheet(expensesForExport, { header: ["vendor", "description", "beforeTax", "tax", "total", ...expenseTypes] });
-  
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
     XLSX.writeFile(workbook, 'expense_report.xlsx');
   };
-  
-  const handleAddExpense = () => {
-    const taxMultiplier = newExpense.type === 'Meals' ? 0.5 : 1;
-    const taxAmount = parseFloat(((newExpense.beforeTax * taxRate / 100) * taxMultiplier).toFixed(2));
-    const totalAmount = parseFloat(newExpense.beforeTax) + taxAmount;
 
+  const handleAddExpense = () => {
+    const baseTaxAmount = newExpense.beforeTax * taxRate / 100;
+    const taxMultiplier = newExpense.type === 'Meals' ? 0.5 : 1; // Halve the tax if type is 'Meals'
+    const taxAmount = parseFloat((baseTaxAmount * taxMultiplier).toFixed(2));
+    const totalAmount = parseFloat(newExpense.beforeTax) + taxAmount;
+  
     const expenseWithTotals = {
       ...newExpense,
       beforeTax: parseFloat(newExpense.beforeTax),
@@ -66,8 +68,8 @@ function AccountsPayable() {
     setExpenses([...expenses, expenseWithTotals]);
     setNewExpense({ vendor: '', type: 'Meals', description: '', beforeTax: 0, tax: 0 });
   };
+  
 
-  // New function to add custom expense type
   const handleAddCustomType = () => {
     if (newCustomType && !customTypes.includes(newCustomType)) {
       setCustomTypes([...customTypes, newCustomType]);
@@ -91,93 +93,97 @@ function AccountsPayable() {
     <div className="AccountsPayable">
       <h1>Expense Report Maker</h1>
       <div className="expense-form">
-        <input
-          type="text"
+        <TextField
+          label="Vendor"
           name="vendor"
-          placeholder="Vendor"
           value={newExpense.vendor}
           onChange={handleInputChange}
+          variant="outlined"
+          margin="normal"
         />
-        <input
-          type="text"
+        <TextField
+          label="Description"
           name="description"
-          placeholder="Description"
           value={newExpense.description}
           onChange={handleInputChange}
+          variant="outlined"
+          margin="normal"
         />
-        <input
-          type="number"
+        <TextField
+          label="Before Tax"
           name="beforeTax"
-          placeholder="Before Tax"
+          type="number"
           value={newExpense.beforeTax}
           onChange={handleInputChange}
+          variant="outlined"
+          margin="normal"
         />
-        <select
+        <Select
           name="type"
           value={newExpense.type}
           onChange={handleInputChange}
+          variant="outlined"
+          margin="normal"
         >
           {expenseTypes.map((type, index) => (
-            <option key={index} value={type}>{type}</option>
+            <MenuItem key={index} value={type}>{type}</MenuItem>
           ))}
-        </select>
-        <button onClick={handleAddExpense}>Add Expense</button>
-        <button onClick={handleSaveData}>Save Data</button>
+        </Select>
+        <Button variant="contained" color="primary" onClick={handleAddExpense}>Add Expense</Button>
+        <Button variant="contained" color="secondary" onClick={handleSaveData}>Save Data</Button>
       </div>
-      {/* New section for adding custom expense types */}
       <div className="custom-type-form">
-        <input
-          type="text"
+        <TextField
+          label="New Expense Type"
           value={newCustomType}
           onChange={(e) => setNewCustomType(e.target.value)}
-          placeholder="New Expense Type"
+          variant="outlined"
+          margin="normal"
         />
-        <button className="add-custom-type" onClick={handleAddCustomType}>Add Custom Type</button>
+        <Button className="add-custom-type" variant="contained" onClick={handleAddCustomType}>Add Custom Type</Button>
       </div>
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Vendor</th>
-              <th>Description</th>
-              <th>Total</th>
-              <th>Tax 21410</th>
-              <th>Net Exp.</th>
+      <TableContainer component={Paper} className="table-container">
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Vendor</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Total</TableCell>
+              <TableCell>Tax 21410</TableCell>
+              <TableCell>Net Exp.</TableCell>
               {expenseTypes.map((type, index) => (
-                <th key={index}>{type}</th>
+                <TableCell key={index}>{type}</TableCell>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {expenses.map((expense, index) => (
-              <tr key={index}>
-                <td>{expense.vendor}</td>
-                <td>{expense.description}</td>
-                <td>{expense.total.toFixed(2)}</td>
-                <td>{expense.tax.toFixed(2)}</td>
-                <td>{expense.beforeTax.toFixed(2)}</td>
+              <TableRow key={index}>
+                <TableCell>{expense.vendor}</TableCell>
+                <TableCell>{expense.description}</TableCell>
+                <TableCell>{expense.total.toFixed(2)}</TableCell>
+                <TableCell>{expense.tax.toFixed(2)}</TableCell>
+                <TableCell>{expense.beforeTax.toFixed(2)}</TableCell>
                 {expenseTypes.map((type, typeIndex) => (
-                  <td key={typeIndex}>{expense.type === type ? expense.beforeTax.toFixed(2) : ''}</td>
+                  <TableCell key={typeIndex}>{expense.type === type ? expense.beforeTax.toFixed(2) : ''}</TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan="2">Grand Total:</td>
-              <td>{totalExpense}</td>
-              <td>{taxExpense}</td>
-              <td>{beforeTaxExpense}</td>
-              {expenseTypes.map((type, index) => (
-                <td key={index}>{calculateTypeTotal(type)}</td>
-              ))}
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+          </TableBody>
+          <TableRow>
+            <TableCell colSpan="2">Grand Total:</TableCell>
+            <TableCell>{totalExpense}</TableCell>
+            <TableCell>{taxExpense}</TableCell>
+            <TableCell>{beforeTaxExpense}</TableCell>
+            {expenseTypes.map((type, index) => (
+              <TableCell key={index}>{calculateTypeTotal(type)}</TableCell>
+            ))}
+          </TableRow>
+        </Table>
+      </TableContainer>
       <div>
         <label>Preferred Tax Rate (%):</label>
-        <input
+        <Input
           type="number"
           value={taxRate}
           onChange={(e) => setTaxRate(parseFloat(e.target.value))}
@@ -185,6 +191,7 @@ function AccountsPayable() {
       </div>
     </div>
   );
+
 }
 
 export default AccountsPayable;
